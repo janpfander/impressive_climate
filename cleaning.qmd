@@ -1,0 +1,217 @@
+---
+title: "Cleaning data"
+format: html
+---
+
+```{r}
+library(tidyverse)
+```
+
+# Import data
+
+```{r import, message=FALSE}
+d <- read_csv("./data/qualtrics.csv")
+names(d)
+```
+
+
+# Rename variables
+
+```{r}
+d <- d |> 
+  rename_with(tolower) |> 
+  # remove _1 at the end of variables
+  rename_with(~ sub("_1$", "", .x))
+```
+
+# Codebook
+
+```{r}
+codebook <- d |> 
+  slice(1) |> 
+  pivot_longer(everything(), 
+               names_to = "variable", 
+               values_to = "description") |> 
+  # remove _1 at the end of string
+  mutate(variable = str_remove(variable, "_1$"))
+
+codebook
+```
+
+
+```{r}
+# inspect
+head(d) # you can also use View(d)
+# delete first two rows
+d <- d %>% 
+  slice(3: nrow(.)) 
+```
+
+# Attention check
+
+```{r attention}
+# attention check
+# to see different answers given (i.e.levels), transform into factor
+d$attention <- as.factor(d$attention)
+# check levels to see different answer types
+levels(d$attention) 
+
+table(d$attention)
+```
+
+There are three failed attention check. 
+
+```{r}
+# filter to only valid attention check responses
+d <- d %>% filter(str_detect(attention, "attention"))
+```
+
+# Re-shape data
+
+```{r}
+# check all names and their order
+names(d)
+```
+
+## Trust in scientists 
+
+### Benevolence 
+
+The survey has three items intended to capture the factor `benevolence`.
+
+```{r}
+# do the re-naming and transform to numeric
+d <- d %>%
+  # syntax for rename() is new_name = old_name
+  rename(benevolence_concerned = concern, 
+         benevolence_improve = eagerness,
+         benevolence_otherinterest = consideration
+         ) %>% 
+  # For now, all variables containing numbers are coded as 'character'.
+  # We need them as numeric.
+  mutate(across(starts_with("benevolence"), as.numeric))
+```
+
+### Competence
+
+The main survey has three items intended to capture the factor `competence`.
+
+```{r}
+# do the re-naming and transform to numeric
+d <- d %>%
+  # syntax for rename() is new_name = old_name
+  rename(competence_expert = competence, 
+         competence_intelligent = intelligence,
+         competence_qualified = qualification
+         ) %>% 
+  # For now, all variables containing numbers are coded as 'character'.
+  # We need them as numeric.
+  mutate(across(starts_with("competence"), as.numeric))
+```
+
+### Integrity
+
+The main survey has three items intended to capture the factor `integrity`.
+
+```{r}
+# do the re-naming and transform to numeric
+d <- d %>%
+  # syntax for rename() is new_name = old_name
+  rename(integrity_honest = honesty, 
+         integrity_ethical = ethic,
+         integrity_sincere = sincerity
+         ) %>% 
+  # For now, all variables containing numbers are coded as 'character'.
+  # We need them as numeric.
+  mutate(across(starts_with("integrity"), as.numeric))
+```
+
+### Openness 
+
+The main survey has three items intended to capture the factor `openness`.
+
+```{r}
+# do the re-naming and transform to numeric
+d <- d %>%
+  # syntax for rename() is new_name = old_name
+  rename(openness_open = feedback, 
+         openness_transparent = transparency,
+         openness_otherviews = attentiveness
+         ) %>% 
+  # For now, all variables containing numbers are coded as 'character'.
+  # We need them as numeric.
+  mutate(across(starts_with("openness"), as.numeric))
+```
+
+### Composite measure
+
+Based on the measures for `competence`, `benevolence`, `integrity` and `openness`, we build a composite variable `trust_composite`. Practically, this means that for our analysis, we will simply calculate the mean of all 12 items.
+
+We also calculate separate measures for all sub-constructs.
+
+```{r}
+d <- d %>%
+  # calculate composite measure
+  mutate(trust = rowMeans(
+    across(starts_with(c("benevolence", "competence", "integrity", "openness")) & contains("_")), 
+    na.rm = TRUE), 
+    competence = rowMeans(across(starts_with('competence')), na.rm = TRUE),
+    benevolence = rowMeans(across(starts_with('benevolence')), na.rm = TRUE),
+    integrity = rowMeans(across(starts_with('integrity')), na.rm = TRUE),
+    openness = rowMeans(across(starts_with('openness')), na.rm = TRUE)
+  )
+```
+
+## Impressiveness
+
+Only retain the numbers from the answer strings.
+
+```{r}
+d <- d |>
+  mutate(impressiveness = as.numeric(str_extract(impressiveness, "\\d+")))
+```
+
+## Condition
+
+```{r}
+d <- d |> 
+  mutate(condition = factor(condition, 
+                            levels = c("random", "control", "impressive", "combination")
+                            )
+         )
+```
+
+
+# Demographics
+
+```{r, message=FALSE}
+prolific_demographics <- read_csv("./data/prolific.csv")
+
+d <- left_join(d, prolific_demographics %>% select(-Age), by = c("PROLIFIC_PID" = "Participant id"))
+```
+
+```{r}
+d <- d %>% 
+  mutate(gender = case_when(Sex == "Male" ~ "male", 
+                            Sex == "Female" ~  "female", 
+                            .default = NA)
+         ) 
+```
+
+# Date
+
+```{r}
+d <- d |> 
+  mutate(date = format(as.Date(startdate), "%B %d, %Y")) 
+```
+
+# Export data
+
+```{r}
+# store data
+write_csv(d, "data/cleaned.csv")
+
+# to prevent factor levels, save as RDS
+saveRDS(d, "data/cleaned.rds")
+
+```

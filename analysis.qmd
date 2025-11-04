@@ -1,0 +1,150 @@
+---
+title: |
+  Impressive climate science
+
+abstract: |
+  These are the results of a pilot study, pre-testing stimuli to strengthening trust in climate scientists. These pilot studies will inform and support an intervention proposal to a megastudy.
+
+date: today
+format:
+  pdf: default
+  hikmah-manuscript-pdf: default
+  hikmah-manuscript-docx: default
+  html: default
+  
+execute:
+  echo: false
+  warning: false
+  message: false  
+---
+
+```{r}
+library(tidyverse)
+library(broom)
+library(emmeans)
+library(ggpubr)
+library(kableExtra)
+library(ggpubr)
+```
+
+```{r}
+data <- readRDS("data/cleaned.rds")
+```
+
+# Descriptives
+
+```{r}
+data |> 
+  count(condition) |> 
+  kable()
+```
+
+
+```{r}
+# by discipline
+data %>% 
+  group_by(condition) %>% 
+  summarise(across(c(trust, competence, benevolence, integrity, openness), 
+                   list(mean = ~mean(., na.rm=TRUE)), 
+                   .names = "{col}_{fn}")) %>%
+  mutate_if(is.numeric, ~round(.x, digits = 2)) %>% 
+  kable() 
+```
+
+# Stats
+
+```{r}
+# model
+model <- lm(trust ~ condition, data = data)
+
+# Estimated marginal means
+emm <- emmeans(model, ~ condition)
+
+# Pairwise comparisons with adjustment for multiple tests
+contrasts <- contrast(emm, method = "pairwise", adjust = "holm") %>%
+  tidy()
+
+# rename comparisons
+contrasts <- contrasts |> 
+  separate(contrast, into = c("group1", "group2"), sep = " - ") |> 
+  mutate(
+    group1 = factor(group1, levels = c("random", "control", "impressive", "combination")),
+    group2 = factor(group2, levels = c("random", "control", "impressive", "combination")),
+    p_label = case_when(
+      adj.p.value < 0.001 ~ "***",
+      adj.p.value < 0.01  ~ "**",
+      adj.p.value < 0.05  ~ "*",
+      TRUE ~ "ns"
+    )
+  )
+
+# get model-predicted means for plotting
+predictions <- tidy(emm, 
+              conf.int = TRUE) %>%
+  select(condition, estimate, conf.low, conf.high)
+```
+
+# Plot
+
+```{r}
+# long_format data
+data_long <- data |> 
+  pivot_longer(c(trust, competence, benevolence, integrity, openness), 
+               names_to = "outcome", 
+               values_to = "value") 
+```
+
+```{r}
+#| label: fig-summary
+#| fig-cap: Comparison of the different experimental groups. Asterixes represent adjusted (for multiple comparison) p-values, with adj.p.value < 0.001 ~ "***", adj.p.value < 0.01  ~ "**", adj.p.value <= 0.05  ~ "*", adj.p.value > 0.05  ~ "ns" (not significant). Black dots and whiskers reprent model predictions and 95% CIs.
+
+# Example: manually specify y positions
+brackets <- contrasts %>%
+  mutate(y.position = seq(max(data$trust) * 1.05,
+                          max(data$trust) * 1.05 + 0.1 * (n() - 1),
+                          length.out = n()))
+
+ggplot(data, aes(x = condition, y = trust)) +
+  geom_boxplot(alpha = 0.5, width = 0.25, outlier.shape = NA) +
+  geom_jitter(aes(color = condition), width = 0.15, alpha = 0.5, size = 2) +
+  geom_pointrange(
+    data = predictions, 
+    aes(
+      x = condition, 
+      y = estimate, 
+      ymin = conf.low, 
+      ymax = conf.high
+    ), 
+    color = "black", 
+    size = 0.5,
+    position = position_nudge(x = 0.25)  # ⬅️ moves predictions to the right
+  ) +
+  labs(y = "Trust", x = "Condition") +
+  scale_fill_viridis_d(option = "C", end = 0.85) +
+  scale_color_viridis_d(option = "C", end = 0.85) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none") + 
+  stat_pvalue_manual(
+    contrasts,
+    label = "p_label",
+    y.position = seq(max(data$trust) + 1, length.out = nrow(contrasts), by = 1.5),
+    xmin = "group1",
+    xmax = "group2",
+    tip.length = 0.01,
+    step.increase = 0.05
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
