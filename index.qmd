@@ -8,8 +8,6 @@ abstract: |
 date: today
 format:
   pdf: default
-  hikmah-manuscript-pdf: default
-  hikmah-manuscript-docx: default
   html: default
   
 execute:
@@ -34,26 +32,30 @@ data <- readRDS("data/cleaned.rds")
 # Descriptives
 
 ```{r}
+#| label: tbl-count
+#| tbl-cap: Number of participants per condition
 data |> 
   count(condition) |> 
   kable()
 ```
 
-
 ```{r}
+#| label: tbl-means
+#| tbl-cap: Means of different outcome measures by condition
+
 # by discipline
 data %>% 
   group_by(condition) %>% 
-  summarise(across(c(trust, competence, benevolence, integrity, openness), 
+  summarise(across(c(trust, competence, benevolence, integrity, openness, impressiveness), 
                    list(mean = ~mean(., na.rm=TRUE)), 
                    .names = "{col}_{fn}")) %>%
   mutate_if(is.numeric, ~round(.x, digits = 2)) %>% 
   kable() 
 ```
 
-# Stats
-
 ```{r}
+# stats 
+
 # model
 model <- lm(trust ~ condition, data = data)
 
@@ -84,7 +86,12 @@ predictions <- tidy(emm,
   select(condition, estimate, conf.low, conf.high)
 ```
 
-# Plot
+```{r}
+# model impressiveness
+model_impressiveness <- lm(impressiveness ~ condition, data = data)
+```
+
+# Plots
 
 ```{r}
 # long_format data

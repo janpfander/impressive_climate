@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    
+website:
+  title: "Impressive Climate Science"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Analysis
+format:
+  html:
+    toc: true
+    toc-depth: 3
+
+execute:
+  freeze: auto 
+  echo: false
+  warning: false
+  message: false
+
+
+

@@ -1,0 +1,17 @@
+{
+  "hash": "8afe2a755c5f8327cb4ac8dec9dca3a0",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: |\n  Impressive climate science\n\nabstract: |\n  These are the results of a pilot study, pre-testing stimuli to strengthening trust in climate scientists. These pilot studies will inform and support an intervention proposal to a megastudy.\n\ndate: today\nformat:\n  pdf: default\n  html: default\n  \nexecute:\n  echo: false\n  warning: false\n  message: false  \n---\n\n\n::: {.cell}\n\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n# Descriptives\n\n\n::: {#tbl-count .cell tbl-cap='Number of participants per condition'}\n::: {.cell-output-display}\n\n\n|condition   |   n|\n|:-----------|---:|\n|random      |  76|\n|control     |  76|\n|impressive  | 146|\n|combination | 150|\n\n\n:::\n:::\n\n\n\n::: {#tbl-means .cell tbl-cap='Means of different outcome measures by condition'}\n::: {.cell-output-display}\n\n\n|condition   | trust_mean| competence_mean| benevolence_mean| integrity_mean| openness_mean| impressiveness_mean|\n|:-----------|----------:|---------------:|----------------:|--------------:|-------------:|-------------------:|\n|random      |      71.18|           75.99|            70.13|          72.62|         65.97|                2.33|\n|control     |      82.09|           87.25|            82.81|          82.13|         76.18|                3.79|\n|impressive  |      80.18|           86.33|            80.45|          80.03|         73.93|                4.04|\n|combination |      77.36|           81.23|            79.25|          77.04|         71.92|                3.63|\n\n\n:::\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n\n::: {.cell}\n\n:::\n\n\n# Plots\n\n\n::: {.cell}\n\n:::\n\n\n\n::: {.cell}\n::: {.cell-output-display}\n![Comparison of the different experimental groups. Asterixes represent adjusted (for multiple comparison) p-values, with adj.p.value < 0.001 ~ \"***\", adj.p.value < 0.01  ~ \"**\", adj.p.value <= 0.05  ~ \"*\", adj.p.value > 0.05  ~ \"ns\" (not significant). Black dots and whiskers reprent model predictions and 95% CIs.](index_files/figure-html/fig-summary-1.png){#fig-summary width=672}\n:::\n:::\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "supporting": [
+      "index_files/figure-html"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
