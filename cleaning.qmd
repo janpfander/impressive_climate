@@ -175,8 +175,11 @@ d <- d |>
 
 ```{r}
 d <- d |> 
-  mutate(condition = factor(condition, 
-                            levels = c("random", "control", "impressive", "combination")
+  mutate(
+    # the condition labeled "combined" really is a gratitude enhancing condition
+    condition = ifelse(condition == "combination", "gratitude", condition),
+    condition = factor(condition, 
+                            levels = c("random", "control", "impressive", "gratitude")
                             )
          )
 ```
