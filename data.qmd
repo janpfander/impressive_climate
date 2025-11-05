@@ -1,0 +1,14 @@
+---
+title: "Data"
+---
+
+You can download the data here: 
+
+- [{{< fa file-csv >}} `qualtrics.csv`](./data/qualtrics.csv) (raw data) 
+
+- [{{< fa file-csv >}} `cleaned.csv`](./data/cleaned.csv) (raw data)
+
+
+
+
+

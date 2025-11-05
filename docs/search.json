@@ -11,27 +11,54 @@
     "href": "cleaning.html",
     "title": "Cleaning data",
     "section": "",
-    "text": "[1] \"StartDate\"             \"EndDate\"               \"Status\"               \n [4] \"Progress\"              \"Duration (in seconds)\" \"Finished\"             \n [7] \"RecordedDate\"          \"ResponseId\"            \"DistributionChannel\"  \n[10] \"UserLanguage\"          \"Consent\"               \"Attention\"            \n[13] \"Competence_1\"          \"Intelligence_1\"        \"Qualification_1\"      \n[16] \"Honesty_1\"             \"Ethic_1\"               \"Sincerity_1\"          \n[19] \"Concern_1\"             \"Eagerness_1\"           \"Consideration_1\"      \n[22] \"Feedback_1\"            \"Transparency_1\"        \"Attentiveness_1\"      \n[25] \"Impressiveness\"        \"condition\"             \"PROLIFIC_PID\""
+    "text": "library(tidyverse)",
+    "crumbs": [
+      "Data",
+      "Cleaning data"
+    ]
   },
   {
     "objectID": "cleaning.html#trust-in-scientists",
     "href": "cleaning.html#trust-in-scientists",
     "title": "Cleaning data",
     "section": "Trust in scientists",
-    "text": "Trust in scientists\n\nBenevolence\nThe survey has three items intended to capture the factor benevolence.\n\n\nCompetence\nThe main survey has three items intended to capture the factor competence.\n\n\nIntegrity\nThe main survey has three items intended to capture the factor integrity.\n\n\nOpenness\nThe main survey has three items intended to capture the factor openness.\n\n\nComposite measure\nBased on the measures for competence, benevolence, integrity and openness, we build a composite variable trust_composite. Practically, this means that for our analysis, we will simply calculate the mean of all 12 items.\nWe also calculate separate measures for all sub-constructs."
+    "text": "Trust in scientists\n\nBenevolence\nThe survey has three items intended to capture the factor benevolence.\n\n# do the re-naming and transform to numeric\nd &lt;- d %&gt;%\n  # syntax for rename() is new_name = old_name\n  rename(benevolence_concerned = concern, \n         benevolence_improve = eagerness,\n         benevolence_otherinterest = consideration\n         ) %&gt;% \n  # For now, all variables containing numbers are coded as 'character'.\n  # We need them as numeric.\n  mutate(across(starts_with(\"benevolence\"), as.numeric))\n\n\n\nCompetence\nThe main survey has three items intended to capture the factor competence.\n\n# do the re-naming and transform to numeric\nd &lt;- d %&gt;%\n  # syntax for rename() is new_name = old_name\n  rename(competence_expert = competence, \n         competence_intelligent = intelligence,\n         competence_qualified = qualification\n         ) %&gt;% \n  # For now, all variables containing numbers are coded as 'character'.\n  # We need them as numeric.\n  mutate(across(starts_with(\"competence\"), as.numeric))\n\n\n\nIntegrity\nThe main survey has three items intended to capture the factor integrity.\n\n# do the re-naming and transform to numeric\nd &lt;- d %&gt;%\n  # syntax for rename() is new_name = old_name\n  rename(integrity_honest = honesty, \n         integrity_ethical = ethic,\n         integrity_sincere = sincerity\n         ) %&gt;% \n  # For now, all variables containing numbers are coded as 'character'.\n  # We need them as numeric.\n  mutate(across(starts_with(\"integrity\"), as.numeric))\n\n\n\nOpenness\nThe main survey has three items intended to capture the factor openness.\n\n# do the re-naming and transform to numeric\nd &lt;- d %&gt;%\n  # syntax for rename() is new_name = old_name\n  rename(openness_open = feedback, \n         openness_transparent = transparency,\n         openness_otherviews = attentiveness\n         ) %&gt;% \n  # For now, all variables containing numbers are coded as 'character'.\n  # We need them as numeric.\n  mutate(across(starts_with(\"openness\"), as.numeric))\n\n\n\nComposite measure\nBased on the measures for competence, benevolence, integrity and openness, we build a composite variable trust_composite. Practically, this means that for our analysis, we will simply calculate the mean of all 12 items.\nWe also calculate separate measures for all sub-constructs.\n\nd &lt;- d %&gt;%\n  # calculate composite measure\n  mutate(trust = rowMeans(\n    across(starts_with(c(\"benevolence\", \"competence\", \"integrity\", \"openness\")) & contains(\"_\")), \n    na.rm = TRUE), \n    competence = rowMeans(across(starts_with('competence')), na.rm = TRUE),\n    benevolence = rowMeans(across(starts_with('benevolence')), na.rm = TRUE),\n    integrity = rowMeans(across(starts_with('integrity')), na.rm = TRUE),\n    openness = rowMeans(across(starts_with('openness')), na.rm = TRUE)\n  )",
+    "crumbs": [
+      "Data",
+      "Cleaning data"
+    ]
   },
   {
     "objectID": "cleaning.html#impressiveness",
     "href": "cleaning.html#impressiveness",
     "title": "Cleaning data",
     "section": "Impressiveness",
-    "text": "Impressiveness\nOnly retain the numbers from the answer strings."
+    "text": "Impressiveness\nOnly retain the numbers from the answer strings.\n\nd &lt;- d |&gt;\n  mutate(impressiveness = as.numeric(str_extract(impressiveness, \"\\\\d+\")))",
+    "crumbs": [
+      "Data",
+      "Cleaning data"
+    ]
   },
   {
     "objectID": "cleaning.html#condition",
     "href": "cleaning.html#condition",
     "title": "Cleaning data",
     "section": "Condition",
-    "text": "Condition"
+    "text": "Condition\n\nd &lt;- d |&gt; \n  mutate(\n    # the condition labeled \"combined\" really is a gratitude enhancing condition\n    condition = ifelse(condition == \"combination\", \"gratitude\", condition),\n    condition = factor(condition, \n                            levels = c(\"random\", \"control\", \"impressive\", \"gratitude\")\n                            )\n         )",
+    "crumbs": [
+      "Data",
+      "Cleaning data"
+    ]
+  },
+  {
+    "objectID": "data.html",
+    "href": "data.html",
+    "title": "Data",
+    "section": "",
+    "text": "You can download the data here:\n\n qualtrics.csv (raw data)\n cleaned.csv (raw data)",
+    "crumbs": [
+      "Data",
+      "Data"
+    ]
   }
 ]

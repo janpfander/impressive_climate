@@ -1,6 +1,9 @@
 ---
 title: "Cleaning data"
 format: html
+
+execute:
+  echo: true
 ---
 
 ```{r}

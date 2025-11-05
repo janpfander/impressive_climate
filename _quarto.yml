@@ -10,6 +10,25 @@ website:
     left:
       - href: index.qmd
         text: Analysis
+      - href: data.qmd
+        text: Data
+
+  sidebar:
+    - title: "Data"
+      contents:
+        - section: "Data"
+          contents:
+            - data.qmd
+            - cleaning.qmd       
+        
+  page-footer: 
+    background: light
+    left: |
+      <span class="faux-block">{{< fa brands creative-commons >}} {{< var years >}} Jan Pfänder</span>
+    right: |
+      <span class="faux-block">Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)</span>, 
+      <span class="faux-block">[View the source at {{< fa brands github >}} GitHub]({{< var github-url >}})</span>
+
 format:
   html:
     toc: true
