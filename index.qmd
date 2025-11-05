@@ -103,7 +103,7 @@ data_long <- data |>
 
 ```{r}
 #| label: fig-summary
-#| fig-cap: Comparison of the different experimental groups. Asterixes represent adjusted (for multiple comparison) p-values, with adj.p.value < 0.001 ~ "***", adj.p.value < 0.01  ~ "**", adj.p.value <= 0.05  ~ "*", adj.p.value > 0.05  ~ "ns" (not significant). Black dots and whiskers reprent model predictions and 95% CIs.
+#| fig-cap: Comparison of the different experimental groups. Asterixes represent adjusted (for multiple comparison) p-values, with adj.p.value < 0.001 ~ "\***", adj.p.value < 0.01  ~ "\**", adj.p.value <= 0.05  ~ "\*", adj.p.value > 0.05  ~ "ns" (not significant). Black dots and whiskers reprent model predictions and 95% CIs.
 
 # Example: manually specify y positions
 brackets <- contrasts %>%
